@@ -75,6 +75,21 @@
   <footer class="pie">
     <p>© Flor de Prenda · Montevideo, Uruguay</p>
   </footer>
+  <!-- CARRITO -->
+  <button class="carrito-flotante" id="abrir-carrito" type="button">
+    Carrito <span id="contador">0</span>
+  </button>
+
+  <div class="fondo-carrito" id="fondo-carrito"></div>
+
+  <aside class="panel-carrito" id="panel-carrito" aria-label="Carrito de compras">
+    <div class="panel-cabecera">
+      <h2>Tu carrito</h2>
+      <button class="cerrar" id="cerrar-carrito" type="button" aria-label="Cerrar carrito">✕</button>
+    </div>
+    <div class="panel-lista" id="lista-carrito"></div>
+    <div class="panel-pie" id="pie-carrito"></div>
+  </aside>
   <script src="productos.js"></script>
   <script src="app.js"></script>
 </body>

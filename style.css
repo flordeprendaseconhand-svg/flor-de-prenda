@@ -260,3 +260,232 @@ a {
   color: var(--texto-suave);
   padding: 40px 0;
 }
+/* ====== BOTÓN AGREGAR (en cada tarjeta) ====== */
+.boton-agregar {
+  width: 100%;
+  margin-top: 12px;
+  font-family: var(--fuente-texto);
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--texto);
+  background: transparent;
+  border: 1px solid var(--texto);
+  border-radius: 999px;
+  padding: 10px 16px;
+  min-height: 44px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.boton-agregar:hover:not(:disabled) {
+  background: var(--terracota);
+  border-color: var(--terracota);
+  color: white;
+}
+
+.boton-agregar:disabled {
+  cursor: default;
+  opacity: 0.55;
+  border-color: var(--arena);
+}
+
+.boton-agregar.en-carrito {
+  opacity: 1;
+  color: var(--terracota);
+  border-color: var(--terracota);
+}
+
+/* ====== BOTÓN FLOTANTE DEL CARRITO ====== */
+.carrito-flotante {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 20;
+  font-family: var(--fuente-texto);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: white;
+  background: var(--terracota);
+  border: none;
+  border-radius: 999px;
+  padding: 14px 22px;
+  min-height: 48px;
+  box-shadow: 0 6px 18px rgba(58, 51, 45, 0.25);
+  cursor: pointer;
+}
+
+.carrito-flotante span {
+  display: inline-block;
+  min-width: 22px;
+  margin-left: 6px;
+  padding: 0 6px;
+  background: white;
+  color: var(--terracota);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+/* ====== PANEL DEL CARRITO ====== */
+.fondo-carrito {
+  position: fixed;
+  inset: 0;
+  background: rgba(58, 51, 45, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+  z-index: 30;
+}
+
+.fondo-carrito.abierto {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.panel-carrito {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(420px, 100%);
+  display: flex;
+  flex-direction: column;
+  background: var(--crema);
+  transform: translateX(100%);
+  transition: transform 0.3s;
+  z-index: 40;
+}
+
+.panel-carrito.abierto {
+  transform: translateX(0);
+}
+
+body.sin-scroll {
+  overflow: hidden;
+}
+
+.panel-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--arena);
+}
+
+.panel-cabecera h2 {
+  font-size: 1.6rem;
+}
+
+.cerrar {
+  font-size: 1.2rem;
+  color: var(--texto);
+  background: transparent;
+  border: none;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+}
+
+.panel-lista {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 20px;
+}
+
+.carrito-vacio {
+  text-align: center;
+  color: var(--texto-suave);
+  padding: 48px 0;
+}
+
+.item-carrito {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--arena);
+}
+
+.item-foto {
+  width: 64px;
+  height: 80px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.item-info {
+  flex: 1;
+}
+
+.item-nombre {
+  font-family: var(--fuente-titulos);
+  font-size: 1.15rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.item-quitar {
+  font-family: var(--fuente-texto);
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+  background: transparent;
+  border: none;
+  text-decoration: underline;
+  min-height: 44px;
+  padding: 0 4px;
+  cursor: pointer;
+}
+
+.panel-pie {
+  padding: 16px 20px 24px;
+  border-top: 1px solid var(--arena);
+  background: var(--arena);
+}
+
+.panel-pie:empty {
+  display: none;
+}
+
+.fila-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  color: var(--texto-suave);
+}
+
+.fila-total-final {
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--texto-suave);
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--texto);
+}
+
+.nota-envio {
+  margin: 10px 0 16px;
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+}
+
+.boton-finalizar {
+  width: 100%;
+  border: none;
+  font-family: var(--fuente-texto);
+  min-height: 48px;
+  cursor: pointer;
+}
+
+.vaciar {
+  display: block;
+  margin: 12px auto 0;
+  font-family: var(--fuente-texto);
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+  background: transparent;
+  border: none;
+  text-decoration: underline;
+  min-height: 40px;
+  cursor: pointer;
+}
