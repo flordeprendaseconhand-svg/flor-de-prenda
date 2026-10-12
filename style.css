@@ -183,3 +183,28 @@ a {
   font-size: 0.8rem;
   color: var(--texto-suave);
 }
+/* ====== ETIQUETA "VENDIDA" ====== */
+.foto-caja {
+  position: relative;
+}
+
+.foto {
+  display: block;
+}
+
+.etiqueta-vendida {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: var(--texto);
+  color: white;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.tarjeta.vendida .foto {
+  opacity: 0.55;
+}
