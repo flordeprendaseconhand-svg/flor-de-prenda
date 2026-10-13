@@ -1,3 +1,7 @@
+// ====== DATOS DEL NEGOCIO ======
+// IMPORTANTE: reemplazá este número por el tuyo (formato 598 + celular sin el 0)
+const WHATSAPP_NUMERO = "59898234948";
+const NOMBRE_TIENDA = "Flor de Prenda";
 // ====== ESTADO ======
 let categoriaActiva = "Todas";
 let talleActivo = "Todos";
@@ -256,11 +260,39 @@ document.getElementById("panel-carrito").addEventListener("click", function (eve
     return;
   }
 
-  if (evento.target.closest("#finalizar")) {
-    alert("Próximo paso: enviar el pedido por WhatsApp.");
-  }
+   if (evento.target.closest("#finalizar")) {
+    enviarPedido();
+  } 
 });
+// ====== PEDIDO POR WHATSAPP ======
+function armarMensajeWhatsApp() {
+  const items = carrito.map(buscarPrenda).filter(Boolean);
+  const total = items.reduce((suma, prenda) => suma + prenda.precio, 0);
 
+  const lineas = items.map((prenda, i) => {
+    return `${i + 1}. ${prenda.nombre} - Talle ${prenda.talle} - ${formatearPrecio(prenda.precio)}`;
+  });
+
+  return [
+    `Hola ${NOMBRE_TIENDA}! 🌸 Quiero hacer este pedido:`,
+    "",
+    ...lineas,
+    "",
+    `Subtotal: ${formatearPrecio(total)}`,
+    `Total: ${formatearPrecio(total)}`,
+    "",
+    "¿Me confirmás la disponibilidad y cómo coordinamos el pago y la entrega? ¡Gracias!"
+  ].join("\n");
+}
+
+function enviarPedido() {
+  if (carrito.length === 0) return;
+
+  const mensaje = armarMensajeWhatsApp();
+  const enlace = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensaje)}`;
+
+  window.open(enlace, "_blank");
+}
 // ====== ARRANQUE ======
 cargarCarrito();
 mostrarFiltros();
