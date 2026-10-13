@@ -2,10 +2,12 @@
 // IMPORTANTE: reemplazá este número por el tuyo (formato 598 + celular sin el 0)
 const WHATSAPP_NUMERO = "59898234948";
 const NOMBRE_TIENDA = "Flor de Prenda";
+
 // ====== ESTADO ======
 let categoriaActiva = "Todas";
 let talleActivo = "Todos";
 let carrito = []; // guarda los "id" de las prendas elegidas
+let prendas = []; // se llena desde Supabase
 
 // ====== UTILIDADES ======
 // Convierte 1490 en "$ 1.490"
@@ -13,9 +15,36 @@ function formatearPrecio(numero) {
   return "$ " + numero.toLocaleString("es-UY");
 }
 
+// Evita que un texto raro rompa la página (seguridad básica)
+function esc(texto) {
+  return String(texto ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 // Busca una prenda por su id
 function buscarPrenda(id) {
   return prendas.find(p => p.id === id);
+}
+
+// ====== LEER PRENDAS DESDE SUPABASE ======
+async function cargarPrendas() {
+  const url = `${SUPABASE_URL}/rest/v1/prendas?select=*&order=creado_en.desc`;
+  const respuesta = await fetch(url, {
+    headers: { apikey: SUPABASE_CLAVE_PUBLICA }
+  });
+
+  if (!respuesta.ok) {
+    throw new Error("Supabase respondió con error " + respuesta.status);
+  }
+
+  const datos = await respuesta.json();
+
+  // Adaptamos el nombre del campo de la foto (foto_url -> foto)
+  prendas = datos.map(p => ({ ...p, foto: p.foto_url }));
 }
 
 // ====== CARRITO: guardar y recuperar ======
@@ -83,20 +112,20 @@ function cerrarCarrito() {
 function crearItemCarrito(prenda) {
   let miniatura;
   if (prenda.foto) {
-    miniatura = `<img class="item-foto" src="${prenda.foto}" alt="${prenda.nombre}">`;
+    miniatura = `<img class="item-foto" src="${esc(prenda.foto)}" alt="${esc(prenda.nombre)}">`;
   } else {
-    miniatura = `<div class="item-foto" style="background:${prenda.color}"></div>`;
+    miniatura = `<div class="item-foto" style="background:${esc(prenda.color)}"></div>`;
   }
 
   return `
     <div class="item-carrito">
       ${miniatura}
       <div class="item-info">
-        <p class="item-nombre">${prenda.nombre}</p>
-        <p class="detalle">Talle ${prenda.talle} · ${prenda.categoria}</p>
+        <p class="item-nombre">${esc(prenda.nombre)}</p>
+        <p class="detalle">Talle ${esc(prenda.talle)} · ${esc(prenda.categoria)}</p>
         <p class="precio">${formatearPrecio(prenda.precio)}</p>
       </div>
-      <button class="item-quitar" type="button" data-quitar="${prenda.id}" aria-label="Quitar ${prenda.nombre}">Quitar</button>
+      <button class="item-quitar" type="button" data-quitar="${prenda.id}" aria-label="Quitar ${esc(prenda.nombre)}">Quitar</button>
     </div>
   `;
 }
@@ -140,9 +169,9 @@ function mostrarCarrito() {
 function crearTarjeta(prenda) {
   let foto;
   if (prenda.foto) {
-    foto = `<img class="foto" src="${prenda.foto}" alt="${prenda.nombre}">`;
+    foto = `<img class="foto" src="${esc(prenda.foto)}" alt="${esc(prenda.nombre)}">`;
   } else {
-    foto = `<div class="foto" style="background:${prenda.color}"></div>`;
+    foto = `<div class="foto" style="background:${esc(prenda.color)}"></div>`;
   }
 
   let etiqueta = "";
@@ -165,8 +194,8 @@ function crearTarjeta(prenda) {
         ${foto}
         ${etiqueta}
       </div>
-      <h3>${prenda.nombre}</h3>
-      <p class="detalle">Talle ${prenda.talle} · ${prenda.categoria}</p>
+      <h3>${esc(prenda.nombre)}</h3>
+      <p class="detalle">Talle ${esc(prenda.talle)} · ${esc(prenda.categoria)}</p>
       <p class="precio">${formatearPrecio(prenda.precio)}</p>
       ${botonCompra}
     </article>
@@ -181,7 +210,7 @@ function valoresUnicos(campo) {
 function crearGrupoFiltro(titulo, opciones, activa, tipo) {
   const botones = opciones.map(opcion => {
     const clase = opcion === activa ? "chip activo" : "chip";
-    return `<button type="button" class="${clase}" data-tipo="${tipo}" data-valor="${opcion}">${opcion}</button>`;
+    return `<button type="button" class="${clase}" data-tipo="${tipo}" data-valor="${esc(opcion)}">${esc(opcion)}</button>`;
   }).join("");
 
   return `
@@ -217,6 +246,36 @@ function mostrarPrendas() {
   } else {
     grilla.innerHTML = visibles.map(crearTarjeta).join("");
   }
+}
+
+// ====== PEDIDO POR WHATSAPP ======
+function armarMensajeWhatsApp() {
+  const items = carrito.map(buscarPrenda).filter(Boolean);
+  const total = items.reduce((suma, prenda) => suma + prenda.precio, 0);
+
+  const lineas = items.map((prenda, i) => {
+    return `${i + 1}. ${prenda.nombre} - Talle ${prenda.talle} - ${formatearPrecio(prenda.precio)}`;
+  });
+
+  return [
+    `Hola ${NOMBRE_TIENDA}! 🌸 Quiero hacer este pedido:`,
+    "",
+    ...lineas,
+    "",
+    `Subtotal: ${formatearPrecio(total)}`,
+    `Total: ${formatearPrecio(total)}`,
+    "",
+    "¿Me confirmás la disponibilidad y cómo coordinamos el pago y la entrega? ¡Gracias!"
+  ].join("\n");
+}
+
+function enviarPedido() {
+  if (carrito.length === 0) return;
+
+  const mensaje = armarMensajeWhatsApp();
+  const enlace = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensaje)}`;
+
+  window.open(enlace, "_blank");
 }
 
 // ====== ESCUCHAR CLICS ======
@@ -260,41 +319,28 @@ document.getElementById("panel-carrito").addEventListener("click", function (eve
     return;
   }
 
-   if (evento.target.closest("#finalizar")) {
+  if (evento.target.closest("#finalizar")) {
     enviarPedido();
-  } 
+  }
 });
-// ====== PEDIDO POR WHATSAPP ======
-function armarMensajeWhatsApp() {
-  const items = carrito.map(buscarPrenda).filter(Boolean);
-  const total = items.reduce((suma, prenda) => suma + prenda.precio, 0);
 
-  const lineas = items.map((prenda, i) => {
-    return `${i + 1}. ${prenda.nombre} - Talle ${prenda.talle} - ${formatearPrecio(prenda.precio)}`;
-  });
-
-  return [
-    `Hola ${NOMBRE_TIENDA}! 🌸 Quiero hacer este pedido:`,
-    "",
-    ...lineas,
-    "",
-    `Subtotal: ${formatearPrecio(total)}`,
-    `Total: ${formatearPrecio(total)}`,
-    "",
-    "¿Me confirmás la disponibilidad y cómo coordinamos el pago y la entrega? ¡Gracias!"
-  ].join("\n");
-}
-
-function enviarPedido() {
-  if (carrito.length === 0) return;
-
-  const mensaje = armarMensajeWhatsApp();
-  const enlace = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensaje)}`;
-
-  window.open(enlace, "_blank");
-}
 // ====== ARRANQUE ======
-cargarCarrito();
-mostrarFiltros();
-mostrarPrendas();
-mostrarCarrito();
+async function iniciar() {
+  const grilla = document.getElementById("grilla");
+  grilla.innerHTML = `<p class="sin-resultados">Cargando prendas…</p>`;
+
+  try {
+    await cargarPrendas();
+  } catch (error) {
+    console.error(error);
+    grilla.innerHTML = `<p class="sin-resultados">No pudimos cargar las prendas en este momento. Probá de nuevo en unos minutos.</p>`;
+    return;
+  }
+
+  cargarCarrito();
+  mostrarFiltros();
+  mostrarPrendas();
+  mostrarCarrito();
+}
+
+iniciar();
