@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Panel · Flor de Prenda</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body class="pagina-admin">
+
+  <header class="encabezado">
+    <span class="logo">Flor de Prenda · Panel</span>
+    <button class="admin-salir" id="salir" type="button" hidden>Cerrar sesión</button>
+  </header>
+
+  <main class="admin-contenedor">
+
+    <!-- PANTALLA DE INGRESO -->
+    <section id="pantalla-login" hidden>
+      <h1>Ingresar</h1>
+      <form id="form-login" class="admin-form">
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="username" required>
+
+        <label for="clave">Contraseña</label>
+        <input id="clave" type="password" autocomplete="current-password" required>
+
+        <p class="admin-error" id="login-error" hidden></p>
+        <button class="boton admin-boton" type="submit">Entrar</button>
+      </form>
+    </section>
+
+    <!-- PANTALLA DEL PANEL -->
+    <section id="pantalla-panel" hidden>
+      <h1>Tus prendas</h1>
+      <p class="admin-aviso" id="aviso-panel"></p>
+      <div id="lista-admin"></div>
+    </section>
+
+    <p class="admin-aviso" id="mensaje-inicial">Cargando…</p>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
