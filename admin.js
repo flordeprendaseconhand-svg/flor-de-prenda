@@ -1,10 +1,12 @@
-// ====== PANEL DE ADMINISTRACIÓN · Paso 16: fotos ======
+// ====== PANEL DE ADMINISTRACIÓN · Paso 17: varias fotos por prenda ======
 
 const CLAVE_SESION = "flor-admin-sesion";
 const BUCKET_FOTOS = "prendas";
 const ANCHO_MAXIMO = 1200; // las fotos se achican a este ancho máximo (px)
+const MAXIMO_FOTOS = 6;    // máximo de fotos por prenda
 let sesion = null;
 let listaPrendas = []; // prendas cargadas desde Supabase
+let fotosActuales = []; // fotos de la prenda que se está editando (la primera es la portada)
 
 // ====== UTILIDADES ======
 function esc(texto) {
@@ -204,30 +206,44 @@ async function subirFoto(blob) {
   return `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_FOTOS}/${nombre}`;
 }
 
-// Muestra (o esconde) la vista previa de la foto en el formulario
-function mostrarPrevia(direccion) {
-  const previa = document.getElementById("p-previa");
-  const quitar = document.getElementById("p-quitar-foto");
+// Dibuja la tira de miniaturas de las fotos de la prenda
+function dibujarFotos() {
+  const contenedor = document.getElementById("p-fotos");
 
-  if (direccion) {
-    previa.src = direccion;
-    previa.hidden = false;
-    quitar.hidden = false;
-  } else {
-    previa.removeAttribute("src");
-    previa.hidden = true;
-    quitar.hidden = true;
-  }
+  contenedor.innerHTML = fotosActuales.map(function (direccion, indice) {
+    const etiqueta = indice === 0
+      ? `<span class="admin-foto-portada">Portada</span>`
+      : "";
+    const botonPortada = indice === 0
+      ? ""
+      : `<button class="admin-foto-boton" type="button" data-foto-accion="portada" data-indice="${indice}">Hacer portada</button>`;
+
+    return `
+      <div class="admin-foto-item">
+        <div class="admin-foto-marco">
+          <img src="${esc(direccion)}" alt="">
+          ${etiqueta}
+        </div>
+        ${botonPortada}
+        <button class="admin-foto-boton" type="button" data-foto-accion="quitar" data-indice="${indice}">Quitar</button>
+      </div>
+    `;
+  }).join("");
 }
 
 // ====== DIBUJAR LA LISTA ======
 function crearFilaAdmin(prenda) {
+  const portada = prenda.foto_url || (Array.isArray(prenda.fotos) && prenda.fotos[0]) || "";
+
   let miniatura;
-  if (prenda.foto_url) {
-    miniatura = `<img class="admin-miniatura" src="${esc(prenda.foto_url)}" alt="">`;
+  if (portada) {
+    miniatura = `<img class="admin-miniatura" src="${esc(portada)}" alt="">`;
   } else {
     miniatura = `<div class="admin-miniatura" style="background:${esc(prenda.color)}"></div>`;
   }
+
+  const cantidadFotos = Array.isArray(prenda.fotos) ? prenda.fotos.length : 0;
+  const textoFotos = cantidadFotos > 1 ? ` · ${cantidadFotos} fotos` : "";
 
   const estadoVenta = prenda.disponible
     ? `<span class="insignia verde">Disponible</span>`
@@ -245,7 +261,7 @@ function crearFilaAdmin(prenda) {
       ${miniatura}
       <div class="admin-datos">
         <p class="admin-nombre">${esc(prenda.nombre)}</p>
-        <p class="detalle">Talle ${esc(prenda.talle)} · ${esc(prenda.categoria)} · ${formatearPrecio(prenda.precio)}</p>
+        <p class="detalle">Talle ${esc(prenda.talle)} · ${esc(prenda.categoria)} · ${formatearPrecio(prenda.precio)}${textoFotos}</p>
         <div class="admin-etiquetas">${estadoVenta}${estadoVisible}</div>
       </div>
       <div class="admin-acciones">
@@ -277,7 +293,7 @@ function actualizarCategorias() {
     categorias.map(c => `<option value="${esc(c)}"></option>`).join("");
 }
 
-const TEXTO_AYUDA_FOTO = "Elegí una foto vertical y con buena luz. Se achica sola al subirla.";
+const TEXTO_AYUDA_FOTO = "Podés elegir hasta 6 fotos. La primera es la portada. Se achican solas al subirlas.";
 
 // Abre el formulario. Sin argumento = prenda nueva. Con una prenda = editar.
 function abrirFormulario(prenda) {
@@ -294,16 +310,22 @@ function abrirFormulario(prenda) {
     document.getElementById("p-talle").value = prenda.talle;
     document.getElementById("p-precio").value = prenda.precio;
     document.getElementById("p-descripcion").value = prenda.descripcion || "";
-    document.getElementById("p-foto").value = prenda.foto_url || "";
-    mostrarPrevia(prenda.foto_url || "");
+
+    if (Array.isArray(prenda.fotos) && prenda.fotos.length > 0) {
+      fotosActuales = [...prenda.fotos];
+    } else if (prenda.foto_url) {
+      fotosActuales = [prenda.foto_url];
+    } else {
+      fotosActuales = [];
+    }
   } else {
     form.reset();
     document.getElementById("form-titulo").textContent = "Nueva prenda";
     document.getElementById("p-id").value = "";
-    document.getElementById("p-foto").value = "";
-    mostrarPrevia("");
+    fotosActuales = [];
   }
 
+  dibujarFotos();
   form.hidden = false;
   form.scrollIntoView({ behavior: "smooth", block: "start" });
   document.getElementById("p-nombre").focus();
@@ -313,8 +335,8 @@ function cerrarFormulario() {
   const form = document.getElementById("form-prenda");
   form.reset();
   document.getElementById("p-id").value = "";
-  document.getElementById("p-foto").value = "";
-  mostrarPrevia("");
+  fotosActuales = [];
+  dibujarFotos();
   document.getElementById("form-error").hidden = true;
   form.hidden = true;
 }
@@ -339,7 +361,8 @@ async function guardarFormulario(evento) {
     talle: document.getElementById("p-talle").value.trim(),
     precio: precio,
     descripcion: document.getElementById("p-descripcion").value.trim() || null,
-    foto_url: document.getElementById("p-foto").value.trim() || null
+    fotos: fotosActuales,
+    foto_url: fotosActuales[0] || null // la portada sigue guardada en foto_url
   };
 
   if (!datos.nombre || !datos.categoria || !datos.talle) {
@@ -450,23 +473,40 @@ document.getElementById("p-precio").addEventListener("wheel", function (evento) 
   evento.target.blur();
 });
 
-// Elegir una foto: se achica, se sube y se muestra la vista previa
+// Elegir fotos: cada una se achica, se sube y se agrega a la tira de miniaturas
 document.getElementById("p-archivo").addEventListener("change", async function (evento) {
-  const archivo = evento.target.files[0];
-  if (!archivo) return;
+  const archivos = Array.from(evento.target.files);
+  if (archivos.length === 0) return;
 
   const estado = document.getElementById("p-foto-estado");
   const botonGuardar = document.getElementById("btn-guardar");
 
+  const lugares = MAXIMO_FOTOS - fotosActuales.length;
+  if (lugares <= 0) {
+    estado.textContent = `Ya hay ${MAXIMO_FOTOS} fotos. Quitá alguna para poder agregar otra.`;
+    evento.target.value = "";
+    return;
+  }
+
+  const aSubir = archivos.slice(0, lugares);
+  const sobraron = archivos.length - aSubir.length;
+
   botonGuardar.disabled = true;
-  estado.textContent = "Subiendo foto…";
+  let subidas = 0;
 
   try {
-    const blob = await achicarImagen(archivo);
-    const direccion = await subirFoto(blob);
-    document.getElementById("p-foto").value = direccion;
-    mostrarPrevia(direccion);
-    estado.textContent = "Foto lista ✓ (se guarda al tocar Guardar).";
+    for (let i = 0; i < aSubir.length; i++) {
+      estado.textContent = `Subiendo foto ${i + 1} de ${aSubir.length}…`;
+      const blob = await achicarImagen(aSubir[i]);
+      const direccion = await subirFoto(blob);
+      fotosActuales.push(direccion);
+      subidas++;
+      dibujarFotos();
+    }
+
+    estado.textContent = sobraron > 0
+      ? `Se subieron ${subidas} fotos. Las otras ${sobraron} no entraron (máximo ${MAXIMO_FOTOS}). Se guardan al tocar Guardar.`
+      : `${subidas === 1 ? "Foto lista" : subidas + " fotos listas"} ✓ (se guardan al tocar Guardar).`;
   } catch (e) {
     if (e.message === "sin-sesion") {
       mostrar("pantalla-login");
@@ -476,15 +516,28 @@ document.getElementById("p-archivo").addEventListener("change", async function (
     }
   } finally {
     botonGuardar.disabled = false;
-    evento.target.value = ""; // permite elegir de nuevo la misma foto
+    evento.target.value = ""; // permite elegir de nuevo las mismas fotos
   }
 });
 
-// Quitar la foto de la prenda (se aplica al guardar)
-document.getElementById("p-quitar-foto").addEventListener("click", function () {
-  document.getElementById("p-foto").value = "";
-  mostrarPrevia("");
-  document.getElementById("p-foto-estado").textContent = TEXTO_AYUDA_FOTO;
+// Quitar una foto o cambiar la portada (se aplica al guardar)
+document.getElementById("p-fotos").addEventListener("click", function (evento) {
+  const boton = evento.target.closest("[data-foto-accion]");
+  if (!boton) return;
+
+  const indice = Number(boton.dataset.indice);
+  if (!Number.isInteger(indice) || indice < 0 || indice >= fotosActuales.length) return;
+
+  if (boton.dataset.foto === "quitar" || boton.dataset.fotoAccion === "quitar") {
+    fotosActuales.splice(indice, 1);
+  } else if (boton.dataset.fotoAccion === "portada") {
+    const elegida = fotosActuales.splice(indice, 1)[0];
+    fotosActuales.unshift(elegida);
+  }
+
+  dibujarFotos();
+  document.getElementById("p-foto-estado").textContent =
+    "Cambio listo ✓ (se guarda al tocar Guardar).";
 });
 
 // Botones de cada prenda: Editar, Marcar vendida, Ocultar
