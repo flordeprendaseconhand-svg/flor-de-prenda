@@ -50,25 +50,54 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
+  padding: 12px 24px;
   border-bottom: 1px solid var(--arena);
 }
 
 .logo {
-  font-family: var(--fuente-titulos);
-  font-size: 1.6rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  display: block;
+  line-height: 0;
+}
+
+/* Tamaño del logo: si lo querés más grande o más chico, cambiá este número */
+.logo-img {
+  display: block;
+  height: 96px;
+  width: auto;
+  mix-blend-mode: darken;   /* funde el fondo del logo con la página */
 }
 
 .menu a {
-  margin-left: 20px;
-  font-size: 0.9rem;
-  color: var(--texto-suave);
+  display: inline-block;
+  margin-left: 18px;
+  padding: 10px 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--texto);
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
 }
 
 .menu a:hover {
   color: var(--terracota);
+  border-bottom-color: var(--terracota);
+}
+
+/* Pantallas grandes: logo un poco más grande y más aire a los costados */
+@media (min-width: 900px) {
+  .encabezado {
+    padding: 16px 48px;
+  }
+
+  .logo-img {
+    height: 120px;
+  }
+
+  .menu a {
+    margin-left: 32px;
+  }
 }
 
 /* ====== PORTADA ====== */
