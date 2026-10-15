@@ -729,3 +729,183 @@ body.sin-scroll {
   min-height: 40px;
   cursor: pointer;
 }
+
+/* ====== TARJETA: foto clickeable ====== */
+.foto-caja[data-ficha],
+.tarjeta h3[data-ficha] {
+  cursor: pointer;
+}
+
+.etiqueta-fotos {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  background: rgba(247, 242, 233, 0.92);
+  color: var(--verde-oscuro);
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* ====== FICHA DE LA PRENDA ====== */
+.fondo-ficha {
+  position: fixed;
+  inset: 0;
+  background: rgba(52, 42, 38, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+  z-index: 50;
+}
+
+.fondo-ficha.abierta {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ficha {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  width: min(480px, 100%);
+  max-height: 94vh;
+  overflow-y: auto;
+  background: var(--crema);
+  border-radius: 20px 20px 0 0;
+  transform: translate(-50%, 105%);
+  transition: transform 0.3s;
+  z-index: 60;
+}
+
+.ficha.abierta {
+  transform: translate(-50%, 0);
+}
+
+.ficha-cerrar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;
+  width: 44px;
+  height: 44px;
+  font-size: 1.1rem;
+  color: var(--verde-oscuro);
+  background: rgba(247, 242, 233, 0.92);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.ficha-galeria {
+  position: relative;
+}
+
+.ficha-pista {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ficha-pista::-webkit-scrollbar {
+  display: none;
+}
+
+.ficha-foto {
+  flex: 0 0 100%;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  scroll-snap-align: center;
+  background: var(--arena);
+}
+
+.ficha-puntos {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 14px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.ficha-punto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(247, 242, 233, 0.6);
+  box-shadow: 0 0 0 1px rgba(52, 42, 38, 0.25);
+  transition: background 0.2s, transform 0.2s;
+}
+
+.ficha-punto.activo {
+  background: var(--crema);
+  transform: scale(1.3);
+}
+
+.ficha-flecha {
+  position: absolute;
+  top: 50%;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  font-size: 1.1rem;
+  color: var(--verde-oscuro);
+  background: rgba(247, 242, 233, 0.9);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.ficha-flecha-izq { left: 10px; }
+.ficha-flecha-der { right: 10px; }
+
+/* En el celular se desliza con el dedo, así que las flechas se esconden */
+@media (hover: none) {
+  .ficha-flecha {
+    display: none;
+  }
+}
+
+.ficha-info {
+  padding: 22px 24px 28px;
+}
+
+.ficha-info h2 {
+  font-size: 1.8rem;
+  color: var(--verde-oscuro);
+}
+
+.ficha-info .precio {
+  margin-top: 10px;
+  font-size: 1.3rem;
+}
+
+.ficha-descripcion {
+  margin-top: 16px;
+  white-space: pre-line;
+  color: var(--texto-suave);
+}
+
+.ficha-info .boton-agregar {
+  margin-top: 22px;
+}
+
+.ficha-ver-carrito {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  font-family: var(--fuente-texto);
+  font-size: 0.85rem;
+  color: var(--verde-oscuro);
+  background: transparent;
+  border: none;
+  text-decoration: underline;
+  min-height: 44px;
+  cursor: pointer;
+}
