@@ -8,6 +8,7 @@ let categoriaActiva = "Todas";
 let talleActivo = "Todos";
 let carrito = []; // guarda los "id" de las prendas elegidas
 let prendas = []; // se llena desde Supabase
+let fichaAbierta = null; // id de la prenda cuya ficha está abierta (o null)
 
 // ====== UTILIDADES ======
 // Convierte 1490 en "$ 1.490"
@@ -43,8 +44,18 @@ async function cargarPrendas() {
 
   const datos = await respuesta.json();
 
-  // Adaptamos el nombre del campo de la foto (foto_url -> foto)
-  prendas = datos.map(p => ({ ...p, foto: p.foto_url }));
+  // Armamos la lista de fotos de cada prenda.
+  // Si no tiene lista nueva, usamos la foto vieja (foto_url).
+  // "foto" es la portada: la primera de la lista.
+  prendas = datos.map(p => {
+    let fotos = [];
+    if (Array.isArray(p.fotos) && p.fotos.length > 0) {
+      fotos = p.fotos.filter(Boolean);
+    } else if (p.foto_url) {
+      fotos = [p.foto_url];
+    }
+    return { ...p, fotos: fotos, foto: fotos[0] || null };
+  });
 }
 
 // ====== CARRITO: guardar y recuperar ======
@@ -93,6 +104,12 @@ function actualizarTodo() {
   guardarCarrito();
   mostrarCarrito();
   mostrarPrendas();
+
+  // Si hay una ficha abierta, actualizamos su botón (sin mover las fotos)
+  if (fichaAbierta !== null) {
+    const prenda = buscarPrenda(fichaAbierta);
+    if (prenda) dibujarInfoFicha(prenda);
+  }
 }
 
 // ====== CARRITO: abrir y cerrar el panel ======
@@ -188,18 +205,124 @@ function crearTarjeta(prenda) {
     botonCompra = `<button class="boton-agregar" type="button" data-agregar="${prenda.id}">Agregar al carrito</button>`;
   }
 
+  // Si tiene más de una foto, avisamos con una etiquetita
+  const etiquetaFotos = prenda.fotos.length > 1
+    ? `<span class="etiqueta-fotos">${prenda.fotos.length} fotos</span>`
+    : "";
+
   return `
     <article class="tarjeta ${claseVendida}">
-      <div class="foto-caja">
+      <div class="foto-caja" data-ficha="${prenda.id}" role="button" tabindex="0" aria-label="Ver ${esc(prenda.nombre)}">
         ${foto}
         ${etiqueta}
+        ${etiquetaFotos}
       </div>
-      <h3>${esc(prenda.nombre)}</h3>
+      <h3 data-ficha="${prenda.id}">${esc(prenda.nombre)}</h3>
       <p class="detalle">Talle ${esc(prenda.talle)} · ${esc(prenda.categoria)}</p>
       <p class="precio">${formatearPrecio(prenda.precio)}</p>
       ${botonCompra}
     </article>
   `;
+}
+
+// ====== FICHA DE LA PRENDA ======
+// Dibuja las fotos (una sola vez al abrir la ficha)
+function dibujarGaleria(prenda) {
+  const contenedor = document.getElementById("ficha-galeria");
+  const cantidad = prenda.fotos.length;
+  const etiquetaVendida = prenda.disponible
+    ? ""
+    : `<span class="etiqueta-vendida">Vendida</span>`;
+
+  if (cantidad === 0) {
+    contenedor.innerHTML = `
+      <div class="ficha-foto" style="background:${esc(prenda.color)}"></div>
+      ${etiquetaVendida}
+    `;
+    return;
+  }
+
+  const imagenes = prenda.fotos.map(function (direccion, i) {
+    const carga = i > 0 ? ` loading="lazy"` : "";
+    return `<img class="ficha-foto" src="${esc(direccion)}" alt="${esc(prenda.nombre)}, foto ${i + 1} de ${cantidad}"${carga}>`;
+  }).join("");
+
+  let extras = "";
+  if (cantidad > 1) {
+    const puntos = prenda.fotos.map(function (_, i) {
+      return `<span class="ficha-punto${i === 0 ? " activo" : ""}"></span>`;
+    }).join("");
+
+    extras = `
+      <button class="ficha-flecha ficha-flecha-izq" type="button" data-flecha="-1" aria-label="Foto anterior">‹</button>
+      <button class="ficha-flecha ficha-flecha-der" type="button" data-flecha="1" aria-label="Foto siguiente">›</button>
+      <div class="ficha-puntos" id="ficha-puntos">${puntos}</div>
+    `;
+  }
+
+  contenedor.innerHTML = `
+    <div class="ficha-pista" id="ficha-pista">${imagenes}</div>
+    ${extras}
+    ${etiquetaVendida}
+  `;
+
+  // Al deslizar, marcamos el puntito de la foto que se está viendo
+  const pista = document.getElementById("ficha-pista");
+  pista.addEventListener("scroll", function () {
+    const indice = Math.round(pista.scrollLeft / pista.clientWidth);
+    document.querySelectorAll("#ficha-puntos .ficha-punto").forEach(function (punto, i) {
+      punto.classList.toggle("activo", i === indice);
+    });
+  });
+}
+
+// Dibuja el texto y el botón de la ficha (se redibuja al agregar al carrito)
+function dibujarInfoFicha(prenda) {
+  let botones;
+  if (!prenda.disponible) {
+    botones = `<button class="boton-agregar" type="button" disabled>No disponible</button>`;
+  } else if (carrito.includes(prenda.id)) {
+    botones = `
+      <button class="boton-agregar en-carrito" type="button" disabled>En tu carrito</button>
+      <button class="ficha-ver-carrito" type="button" data-ficha-carrito="1">Ver mi carrito</button>
+    `;
+  } else {
+    botones = `<button class="boton-agregar" type="button" data-ficha-agregar="${prenda.id}">Agregar al carrito</button>`;
+  }
+
+  const descripcion = prenda.descripcion
+    ? `<p class="ficha-descripcion">${esc(prenda.descripcion)}</p>`
+    : "";
+
+  document.getElementById("ficha-info").innerHTML = `
+    <h2>${esc(prenda.nombre)}</h2>
+    <p class="detalle">Talle ${esc(prenda.talle)} · ${esc(prenda.categoria)}</p>
+    <p class="precio">${formatearPrecio(prenda.precio)}</p>
+    ${descripcion}
+    ${botones}
+  `;
+}
+
+function abrirFicha(id) {
+  const prenda = buscarPrenda(id);
+  if (!prenda) return;
+
+  fichaAbierta = id;
+  dibujarGaleria(prenda);
+  dibujarInfoFicha(prenda);
+
+  const ficha = document.getElementById("ficha");
+  ficha.scrollTop = 0;
+  ficha.classList.add("abierta");
+  document.getElementById("fondo-ficha").classList.add("abierta");
+  document.body.classList.add("sin-scroll");
+}
+
+function cerrarFicha() {
+  fichaAbierta = null;
+  document.getElementById("ficha").classList.remove("abierta");
+  document.getElementById("fondo-ficha").classList.remove("abierta");
+  document.body.classList.remove("sin-scroll");
 }
 
 // ====== FILTROS ======
@@ -304,14 +427,63 @@ document.getElementById("filtros").addEventListener("click", function (evento) {
   mostrarPrendas();
 });
 
-// Botón "Agregar al carrito" de las tarjetas
+// Tarjetas: "Agregar al carrito" y abrir la ficha al tocar la foto o el nombre
 document.getElementById("grilla").addEventListener("click", function (evento) {
-  const boton = evento.target.closest("[data-agregar]");
-  if (!boton) return;
-  agregarAlCarrito(Number(boton.dataset.agregar));
+  const agregar = evento.target.closest("[data-agregar]");
+  if (agregar) {
+    agregarAlCarrito(Number(agregar.dataset.agregar));
+    return;
+  }
+
+  const ficha = evento.target.closest("[data-ficha]");
+  if (ficha) {
+    abrirFicha(Number(ficha.dataset.ficha));
+  }
 });
 
-// Abrir y cerrar el panel
+// Abrir la ficha con el teclado (Enter o espacio sobre la foto)
+document.getElementById("grilla").addEventListener("keydown", function (evento) {
+  if (evento.key !== "Enter" && evento.key !== " ") return;
+  const ficha = evento.target.closest(".foto-caja[data-ficha]");
+  if (!ficha) return;
+  evento.preventDefault();
+  abrirFicha(Number(ficha.dataset.ficha));
+});
+
+// Dentro de la ficha: cerrar, flechas, agregar, ver carrito
+document.getElementById("cerrar-ficha").addEventListener("click", cerrarFicha);
+document.getElementById("fondo-ficha").addEventListener("click", cerrarFicha);
+
+document.getElementById("ficha").addEventListener("click", function (evento) {
+  const flecha = evento.target.closest("[data-flecha]");
+  if (flecha) {
+    const pista = document.getElementById("ficha-pista");
+    if (pista) {
+      pista.scrollBy({ left: Number(flecha.dataset.flecha) * pista.clientWidth, behavior: "smooth" });
+    }
+    return;
+  }
+
+  const agregar = evento.target.closest("[data-ficha-agregar]");
+  if (agregar) {
+    agregarAlCarrito(Number(agregar.dataset.fichaAgregar));
+    return;
+  }
+
+  if (evento.target.closest("[data-ficha-carrito]")) {
+    cerrarFicha();
+    abrirCarrito();
+  }
+});
+
+// Tecla Escape cierra la ficha
+document.addEventListener("keydown", function (evento) {
+  if (evento.key === "Escape" && fichaAbierta !== null) {
+    cerrarFicha();
+  }
+});
+
+// Abrir y cerrar el panel del carrito
 document.getElementById("abrir-carrito").addEventListener("click", abrirCarrito);
 document.getElementById("cerrar-carrito").addEventListener("click", cerrarCarrito);
 document.getElementById("fondo-carrito").addEventListener("click", cerrarCarrito);
