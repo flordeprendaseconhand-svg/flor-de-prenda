@@ -9,6 +9,7 @@
 
   /* Tonos derivados de la paleta */
   --arena: #EDE5D6;
+  --salvia-suave: #E3E8DB;
   --terracota-oscuro: #8E412C;
   --texto: var(--chocolate);
   --texto-suave: #6E625A;
@@ -323,23 +324,57 @@ button:focus-visible {
 
 /* ====== NOSOTRAS ====== */
 .nosotras {
+  padding: 72px 24px;
   text-align: center;
-  padding: 60px 24px;
-  background: var(--arena);
+  background: var(--salvia-suave);
+}
+
+.nosotras-contenido {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.nosotras h2 {
+  margin-bottom: 20px;
+}
+
+/* Una sola palabra en itálica terracota */
+.nosotras h2 em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--terracota);
 }
 
 .nosotras p {
-  max-width: 520px;
-  margin: 0 auto;
   color: var(--texto-suave);
+}
+
+/* Firma manuscrita (lleva ".nosotras" adelante para ganarle a ".nosotras p") */
+.nosotras .nosotras-firma {
+  display: inline-block;
+  margin-top: 22px;
+  font-family: var(--fuente-mano);
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--terracota);
+  transform: rotate(-2deg);
 }
 
 /* ====== PIE ====== */
 .pie {
+  padding: 34px 24px 96px;      /* espacio abajo para que el botón flotante no tape el texto */
   text-align: center;
-  padding: 28px 24px;
   font-size: 0.8rem;
-  color: var(--texto-suave);
+  letter-spacing: 0.04em;
+  color: var(--crema);
+  background: var(--verde-oscuro);
+}
+
+@media (min-width: 900px) {
+  .pie {
+    padding: 34px 24px;
+  }
 }
 
 /* ====== ETIQUETA "VENDIDA" ====== */
