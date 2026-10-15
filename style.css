@@ -17,6 +17,10 @@
   --fuente-titulos: "Fraunces", Georgia, serif;
   --fuente-texto: "DM Sans", Arial, sans-serif;
   --fuente-mano: "Caveat", cursive;
+
+  /* Tipografías del logo (solo se usan en el encabezado) */
+  --fuente-logo: "Cormorant Garamond", Georgia, serif;
+  --fuente-firma: "Allura", "Brush Script MT", cursive;
 }
 
 /* ====== BASE ====== */
@@ -46,30 +50,60 @@ a {
 }
 
 /* ====== ENCABEZADO ====== */
+/* Celular: logo arriba, menú abajo, todo centrado */
 .encabezado {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 24px;
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  gap: 2px;
+  padding: 14px 24px 4px;
   border-bottom: 1px solid var(--arena);
 }
 
-.logo {
-  display: block;
-  line-height: 0;
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--verde-oscuro);
 }
 
-/* Tamaño del logo: si lo querés más grande o más chico, cambiá este número */
-.logo-img {
+/* La flor: el truco "darken" hace que su fondo se funda con la página */
+.marca-flor {
   display: block;
-  height: 96px;
+  height: 54px;
   width: auto;
-  mix-blend-mode: darken;   /* funde el fondo del logo con la página */
+  mix-blend-mode: darken;
+}
+
+/* El nombre: FLOR y PRENDA en Cormorant Garamond Light, "de" en Allura */
+.marca-nombre {
+  display: flex;
+  align-items: baseline;
+  gap: 0.22em;
+  font-family: var(--fuente-logo);
+  font-weight: 300;
+  font-size: 1.6rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+}
+
+.marca-de {
+  display: inline-block;
+  font-family: var(--fuente-firma);
+  font-weight: 400;
+  font-size: 1.5em;
+  letter-spacing: 0;
+  color: var(--terracota);
+  transform: translateY(-0.02em);
+}
+
+.menu {
+  display: flex;
+  gap: 28px;
 }
 
 .menu a {
   display: inline-block;
-  margin-left: 18px;
   padding: 10px 0;
   font-size: 0.75rem;
   font-weight: 500;
@@ -85,18 +119,31 @@ a {
   border-bottom-color: var(--terracota);
 }
 
-/* Pantallas grandes: logo un poco más grande y más aire a los costados */
+/* Pantallas grandes: menú a la izquierda, logo en el centro */
 @media (min-width: 900px) {
   .encabezado {
-    padding: 16px 48px;
+    grid-template-columns: 1fr auto 1fr;
+    padding: 20px 48px;
   }
 
-  .logo-img {
-    height: 120px;
+  .marca {
+    grid-column: 2;
+    grid-row: 1;
   }
 
-  .menu a {
-    margin-left: 32px;
+  .menu {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+    gap: 32px;
+  }
+
+  .marca-flor {
+    height: 72px;
+  }
+
+  .marca-nombre {
+    font-size: 2.4rem;
   }
 }
 
