@@ -39,8 +39,47 @@
 
     <!-- PANTALLA DEL PANEL -->
     <section id="pantalla-panel" hidden>
-      <h1>Tus prendas</h1>
+      <div class="admin-cabecera-lista">
+        <h1>Tus prendas</h1>
+        <button class="boton admin-boton admin-boton-nuevo" id="btn-nueva" type="button">+ Nueva prenda</button>
+      </div>
       <p class="admin-aviso" id="aviso-panel"></p>
+
+      <!-- FORMULARIO PARA CREAR / EDITAR -->
+      <form id="form-prenda" class="admin-form admin-form-prenda" hidden>
+        <h2 id="form-titulo">Nueva prenda</h2>
+        <input type="hidden" id="p-id">
+
+        <label for="p-nombre">Nombre</label>
+        <input id="p-nombre" type="text" maxlength="120" placeholder="Ej: Blazer de lino" required>
+
+        <label for="p-categoria">Categoría</label>
+        <input id="p-categoria" type="text" list="lista-categorias" maxlength="60" placeholder="Ej: Vestidos" required>
+        <datalist id="lista-categorias"></datalist>
+
+        <label for="p-talle">Talle</label>
+        <input id="p-talle" type="text" maxlength="20" placeholder="Ej: M, 40, Único" required>
+
+        <label for="p-precio">Precio en pesos uruguayos</label>
+        <input id="p-precio" type="number" inputmode="numeric" min="0" step="1" placeholder="Ej: 1490" required>
+
+        <label for="p-descripcion">Descripción (opcional)</label>
+        <textarea id="p-descripcion" rows="3" placeholder="Medidas, estado, composición..."></textarea>
+
+          <label for="p-archivo">Foto</label>
+        <input id="p-archivo" type="file" accept="image/*">
+        <input type="hidden" id="p-foto">
+        <img id="p-previa" class="admin-previa" alt="" hidden>
+        <p class="admin-ayuda" id="p-foto-estado">Elegí una foto vertical y con buena luz. Se achica sola al subirla.</p>
+        <button class="admin-boton-secundario" id="p-quitar-foto" type="button" hidden>Quitar foto</button>     
+        <p class="admin-error" id="form-error" hidden></p>
+
+        <div class="admin-botones-form">
+          <button class="boton admin-boton" id="btn-guardar" type="submit">Guardar</button>
+          <button class="admin-boton-secundario" id="btn-cancelar" type="button">Cancelar</button>
+        </div>
+      </form>
+
       <div id="lista-admin"></div>
     </section>
 

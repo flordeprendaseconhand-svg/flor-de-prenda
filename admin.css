@@ -148,3 +148,89 @@
   opacity: 0.55;
   cursor: default;
 }
+/* ====== FORMULARIO DE PRENDA Y ENCABEZADO DE LISTA ====== */
+.admin-cabecera-lista {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.admin-cabecera-lista h1 {
+  margin-bottom: 0;
+}
+
+.admin-boton-nuevo {
+  margin-top: 0;
+  padding: 10px 22px;
+}
+
+.admin-form-prenda {
+  max-width: 100%;
+  padding: 20px;
+  margin-bottom: 28px;
+  background: var(--arena);
+  border-radius: 10px;
+}
+
+.admin-form-prenda h2 {
+  font-size: 1.6rem;
+  margin-bottom: 4px;
+}
+
+.admin-form textarea {
+  font-family: var(--fuente-texto);
+  font-size: 1rem;
+  padding: 12px 14px;
+  border: 1px solid var(--arena);
+  border-radius: 8px;
+  background: white;
+  color: var(--texto);
+  resize: vertical;
+}
+
+.admin-ayuda {
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+}
+
+.admin-botones-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.admin-botones-form .admin-boton {
+  margin-top: 0;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+.admin-boton-secundario {
+  font-family: var(--fuente-texto);
+  font-size: 0.9rem;
+  color: var(--texto-suave);
+  background: transparent;
+  border: none;
+  text-decoration: underline;
+  min-height: 48px;
+  padding: 0 12px;
+  cursor: pointer;
+}
+/* ====== VISTA PREVIA DE LA FOTO ====== */
+.admin-previa {
+  width: 120px;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-top: 8px;
+}
+
+.admin-form input[type="file"] {
+  padding: 10px;
+  background: white;
+}
