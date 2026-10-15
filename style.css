@@ -363,7 +363,7 @@ button:focus-visible {
 
 /* ====== PIE ====== */
 .pie {
-  padding: 34px 24px 96px;      /* espacio abajo para que el botón flotante no tape el texto */
+  padding: 34px 24px 96px;      /* espacio abajo para que los botones flotantes no tapen el texto */
   text-align: center;
   font-size: 0.8rem;
   letter-spacing: 0.04em;
@@ -529,6 +529,35 @@ button:focus-visible {
   border-radius: 999px;
   font-size: 0.8rem;
   text-align: center;
+}
+
+/* ====== BOTÓN FLOTANTE DE WHATSAPP ====== */
+.whatsapp-flotante {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  color: var(--crema);
+  background: var(--verde-oscuro);
+  box-shadow: 0 6px 18px rgba(52, 42, 38, 0.25);
+  transition: background 0.2s;
+}
+
+.whatsapp-flotante:hover {
+  background: var(--terracota);
+}
+
+.whatsapp-flotante svg {
+  display: block;
+  width: 26px;
+  height: 26px;
+  fill: currentColor;
 }
 
 /* ====== PANEL DEL CARRITO ====== */
