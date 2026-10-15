@@ -1,13 +1,22 @@
 /* ====== COLORES Y TIPOGRAFÍAS (los definimos una sola vez) ====== */
 :root {
-  --crema: #faf6f0;
-  --arena: #efe6da;
-  --#7d8f69;
-  --oliva: #6b705c;
-  --texto: #3a332d;
-  --texto-suave: #7a6f65;
-  --fuente-titulos: "Cormorant Garamond", Georgia, serif;
-  --fuente-texto: "Inter", Arial, sans-serif;
+  /* Paleta de Flor de Prenda */
+  --crema: #F7F2E9;
+  --salvia: #A6B39A;
+  --verde-oscuro: #34483C;
+  --terracota: #A84F36;
+  --chocolate: #342A26;
+
+  /* Tonos derivados de la paleta */
+  --arena: #EDE5D6;
+  --terracota-oscuro: #8E412C;
+  --texto: var(--chocolate);
+  --texto-suave: #6E625A;
+
+  /* Tipografías */
+  --fuente-titulos: "Fraunces", Georgia, serif;
+  --fuente-texto: "DM Sans", Arial, sans-serif;
+  --fuente-mano: "Caveat", cursive;
 }
 
 /* ====== BASE ====== */
@@ -21,13 +30,13 @@ body {
   background: var(--crema);
   color: var(--texto);
   font-family: var(--fuente-texto);
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.6;
 }
 
 h1, h2, h3 {
   font-family: var(--fuente-titulos);
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.15;
 }
 
@@ -100,7 +109,7 @@ a {
 }
 
 .boton:hover {
-  background: #9a523a;
+  background: var(--terracota-oscuro);
 }
 
 /* ====== PRENDAS ====== */
@@ -152,16 +161,13 @@ a {
   color: var(--terracota);
 }
 
-/* Fotos de ejemplo: bloques de color (después las reemplazamos por fotos reales) */
+/* Foto de cada prenda */
 .foto {
   aspect-ratio: 3 / 4;
   border-radius: 6px;
   width: 100%;
   object-fit: cover;
 }
-.foto-1 { background: #d9c3a8; }
-.foto-2 { background: #c9a89a; }
-.foto-3 { background: #a9b29a; }
 
 /* ====== NOSOTRAS ====== */
 .nosotras {
@@ -183,6 +189,7 @@ a {
   font-size: 0.8rem;
   color: var(--texto-suave);
 }
+
 /* ====== ETIQUETA "VENDIDA" ====== */
 .foto-caja {
   position: relative;
@@ -208,6 +215,7 @@ a {
 .tarjeta.vendida .foto {
   opacity: 0.55;
 }
+
 /* ====== FILTROS ====== */
 .filtros {
   display: flex;
@@ -260,6 +268,7 @@ a {
   color: var(--texto-suave);
   padding: 40px 0;
 }
+
 /* ====== BOTÓN AGREGAR (en cada tarjeta) ====== */
 .boton-agregar {
   width: 100%;
@@ -310,7 +319,7 @@ a {
   border-radius: 999px;
   padding: 14px 22px;
   min-height: 48px;
-  box-shadow: 0 6px 18px rgba(58, 51, 45, 0.25);
+  box-shadow: 0 6px 18px rgba(52, 42, 38, 0.25);
   cursor: pointer;
 }
 
@@ -330,7 +339,7 @@ a {
 .fondo-carrito {
   position: fixed;
   inset: 0;
-  background: rgba(58, 51, 45, 0.45);
+  background: rgba(52, 42, 38, 0.45);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s;
