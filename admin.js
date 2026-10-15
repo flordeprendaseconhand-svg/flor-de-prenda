@@ -1,7 +1,8 @@
-// ====== PANEL DE ADMINISTRACIÓN · Parte A: ingreso y lista ======
+// ====== PANEL DE ADMINISTRACIÓN · Parte B1: lista + vendida/oculta ======
 
 const CLAVE_SESION = "flor-admin-sesion";
 let sesion = null;
+let listaPrendas = []; // prendas cargadas desde Supabase
 
 // ====== UTILIDADES ======
 function esc(texto) {
@@ -106,7 +107,23 @@ async function consultar(ruta, opciones = {}) {
   return respuesta.json();
 }
 
-// ====== PANTALLAS ======
+// ====== CAMBIAR UN CAMPO DE UNA PRENDA ======
+// Devuelve la prenda actualizada. Si Supabase no modificó nada
+// (por ejemplo, por falta de permisos), avisa con un error.
+async function actualizarPrenda(id, cambios) {
+  const resultado = await consultar(`prendas?id=eq.${id}`, {
+    method: "PATCH",
+    headers: { Prefer: "return=representation" },
+    body: JSON.stringify(cambios)
+  });
+
+  if (!Array.isArray(resultado) || resultado.length === 0) {
+    throw new Error("No se pudo guardar el cambio (sin permisos).");
+  }
+  return resultado[0];
+}
+
+// ====== DIBUJAR LA LISTA ======
 function crearFilaAdmin(prenda) {
   let miniatura;
   if (prenda.foto_url) {
@@ -123,6 +140,9 @@ function crearFilaAdmin(prenda) {
     ? `<span class="insignia">Visible en la tienda</span>`
     : `<span class="insignia gris">Oculta</span>`;
 
+  const textoVenta = prenda.disponible ? "Marcar vendida" : "Marcar disponible";
+  const textoVisible = prenda.visible ? "Ocultar" : "Mostrar";
+
   return `
     <div class="admin-prenda">
       ${miniatura}
@@ -131,8 +151,25 @@ function crearFilaAdmin(prenda) {
         <p class="detalle">Talle ${esc(prenda.talle)} · ${esc(prenda.categoria)} · ${formatearPrecio(prenda.precio)}</p>
         <div class="admin-etiquetas">${estadoVenta}${estadoVisible}</div>
       </div>
+      <div class="admin-acciones">
+        <button class="admin-accion" type="button" data-accion="vendida" data-id="${prenda.id}">${textoVenta}</button>
+        <button class="admin-accion" type="button" data-accion="visible" data-id="${prenda.id}">${textoVisible}</button>
+      </div>
     </div>
   `;
+}
+
+function dibujarLista() {
+  const ocultas = listaPrendas.filter(p => !p.visible).length;
+  const vendidas = listaPrendas.filter(p => !p.disponible).length;
+
+  document.getElementById("aviso-panel").textContent =
+    `${listaPrendas.length} prendas en total · ${vendidas} vendidas · ${ocultas} ocultas.`;
+
+  document.getElementById("lista-admin").innerHTML =
+    listaPrendas.length
+      ? listaPrendas.map(crearFilaAdmin).join("")
+      : "<p>Todavía no hay prendas.</p>";
 }
 
 async function mostrarPanel() {
@@ -152,14 +189,8 @@ async function mostrarPanel() {
       return;
     }
 
-    const prendas = await consultar("prendas?select=*&order=creado_en.desc");
-    const ocultas = prendas.filter(p => !p.visible).length;
-
-    document.getElementById("aviso-panel").textContent =
-      `${prendas.length} prendas en total, ${ocultas} ocultas.`;
-    document.getElementById("lista-admin").innerHTML =
-      prendas.length ? prendas.map(crearFilaAdmin).join("") : "<p>Todavía no hay prendas.</p>";
-
+    listaPrendas = await consultar("prendas?select=*&order=creado_en.desc");
+    dibujarLista();
     mostrar("pantalla-panel");
   } catch (error) {
     if (error.message === "sin-sesion") {
@@ -194,8 +225,44 @@ document.getElementById("form-login").addEventListener("submit", async function 
 
 document.getElementById("salir").addEventListener("click", function () {
   borrarSesion();
+  listaPrendas = [];
   document.getElementById("lista-admin").innerHTML = "";
   mostrar("pantalla-login");
+});
+
+// Botones "Marcar vendida" y "Ocultar" de cada prenda
+document.getElementById("lista-admin").addEventListener("click", async function (evento) {
+  const boton = evento.target.closest("[data-accion]");
+  if (!boton) return;
+
+  const id = Number(boton.dataset.id);
+  const prenda = listaPrendas.find(p => p.id === id);
+  if (!prenda) return;
+
+  // Armamos el cambio: invierte el valor actual
+  let cambios;
+  if (boton.dataset.accion === "vendida") {
+    cambios = { disponible: !prenda.disponible };
+  } else {
+    cambios = { visible: !prenda.visible };
+  }
+
+  boton.disabled = true;
+  boton.textContent = "Guardando…";
+
+  try {
+    const actualizada = await actualizarPrenda(id, cambios);
+    const posicion = listaPrendas.findIndex(p => p.id === id);
+    listaPrendas[posicion] = actualizada;
+    dibujarLista();
+  } catch (error) {
+    if (error.message === "sin-sesion") {
+      mostrar("pantalla-login");
+    } else {
+      alert("No se pudo guardar el cambio. Revisá tu conexión e intentá de nuevo.");
+      dibujarLista();
+    }
+  }
 });
 
 // ====== ARRANQUE ======
