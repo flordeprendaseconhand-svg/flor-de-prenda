@@ -278,6 +278,16 @@ function enviarPedido() {
   window.open(enlace, "_blank");
 }
 
+// ====== BOTÓN FLOTANTE DE WHATSAPP (consultas rápidas) ======
+// Usa el mismo número de arriba, así queda en un solo lugar
+function prepararBotonWhatsApp() {
+  const boton = document.getElementById("whatsapp-flotante");
+  if (!boton) return;
+
+  const mensaje = `Hola ${NOMBRE_TIENDA}! 🌸 Tengo una consulta.`;
+  boton.href = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensaje)}`;
+}
+
 // ====== ESCUCHAR CLICS ======
 // Filtros
 document.getElementById("filtros").addEventListener("click", function (evento) {
@@ -326,6 +336,9 @@ document.getElementById("panel-carrito").addEventListener("click", function (eve
 
 // ====== ARRANQUE ======
 async function iniciar() {
+  // El botón de WhatsApp funciona aunque las prendas no carguen
+  prepararBotonWhatsApp();
+
   const grilla = document.getElementById("grilla");
   grilla.innerHTML = `<p class="sin-resultados">Cargando prendas…</p>`;
 
