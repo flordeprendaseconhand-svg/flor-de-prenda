@@ -1,4 +1,4 @@
-// ====== PANEL DE ADMINISTRACIÓN · Paso 17: varias fotos por prenda ======
+// ====== PANEL DE ADMINISTRACIÓN · Paso 18: borrar prendas con confirmación ======
 
 const CLAVE_SESION = "flor-admin-sesion";
 const BUCKET_FOTOS = "prendas";
@@ -139,6 +139,19 @@ async function crearPrenda(datos) {
   return resultado[0];
 }
 
+// ====== BORRAR UNA PRENDA ======
+async function borrarPrenda(id) {
+  const resultado = await consultar(`prendas?id=eq.${id}`, {
+    method: "DELETE",
+    headers: { Prefer: "return=representation" }
+  });
+
+  // Si Supabase no borró nada (por ejemplo, sin permisos), la lista viene vacía
+  if (!Array.isArray(resultado) || resultado.length === 0) {
+    throw new Error("No se pudo borrar la prenda (sin permisos).");
+  }
+}
+
 // ====== FOTOS: achicar y subir ======
 // Achica la foto a un ancho máximo y la convierte a JPG liviano
 function achicarImagen(archivo) {
@@ -268,6 +281,7 @@ function crearFilaAdmin(prenda) {
         <button class="admin-accion" type="button" data-accion="editar" data-id="${prenda.id}">Editar</button>
         <button class="admin-accion" type="button" data-accion="vendida" data-id="${prenda.id}">${textoVenta}</button>
         <button class="admin-accion" type="button" data-accion="visible" data-id="${prenda.id}">${textoVisible}</button>
+        <button class="admin-accion" type="button" data-accion="borrar" data-id="${prenda.id}" style="color:#A84F36;border-color:#A84F36">Borrar</button>
       </div>
     </div>
   `;
@@ -528,7 +542,7 @@ document.getElementById("p-fotos").addEventListener("click", function (evento) {
   const indice = Number(boton.dataset.indice);
   if (!Number.isInteger(indice) || indice < 0 || indice >= fotosActuales.length) return;
 
-  if (boton.dataset.foto === "quitar" || boton.dataset.fotoAccion === "quitar") {
+  if (boton.dataset.fotoAccion === "quitar") {
     fotosActuales.splice(indice, 1);
   } else if (boton.dataset.fotoAccion === "portada") {
     const elegida = fotosActuales.splice(indice, 1)[0];
@@ -540,7 +554,7 @@ document.getElementById("p-fotos").addEventListener("click", function (evento) {
     "Cambio listo ✓ (se guarda al tocar Guardar).";
 });
 
-// Botones de cada prenda: Editar, Marcar vendida, Ocultar
+// Botones de cada prenda: Editar, Marcar vendida, Ocultar, Borrar
 document.getElementById("lista-admin").addEventListener("click", async function (evento) {
   const boton = evento.target.closest("[data-accion]");
   if (!boton) return;
@@ -551,6 +565,38 @@ document.getElementById("lista-admin").addEventListener("click", async function 
 
   if (boton.dataset.accion === "editar") {
     abrirFormulario(prenda);
+    return;
+  }
+
+  // Borrar: primero pregunta, y solo borra si confirmás
+  if (boton.dataset.accion === "borrar") {
+    const seguro = confirm(
+      `¿Seguro que querés borrar "${prenda.nombre}"?\n\n` +
+      `Esto no se puede deshacer. Si solo querés que no se vea en la tienda, usá "Ocultar".`
+    );
+    if (!seguro) return;
+
+    boton.disabled = true;
+    boton.textContent = "Borrando…";
+
+    try {
+      await borrarPrenda(id);
+      listaPrendas = listaPrendas.filter(p => p.id !== id);
+
+      // Si justo se estaba editando esa prenda, cerramos el formulario
+      if (document.getElementById("p-id").value === String(id)) {
+        cerrarFormulario();
+      }
+      dibujarLista();
+    } catch (error) {
+      if (error.message === "sin-sesion") {
+        mostrar("pantalla-login");
+      } else {
+        console.error(error);
+        alert("No se pudo borrar la prenda. Revisá tu conexión e intentá de nuevo.");
+        dibujarLista();
+      }
+    }
     return;
   }
 
@@ -585,5 +631,9 @@ cargarSesion();
 if (sesion) {
   mostrarPanel();
 } else {
+  mostrarPanel_o_login();
+}
+
+function mostrarPanel_o_login() {
   mostrar("pantalla-login");
 }
