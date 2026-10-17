@@ -979,3 +979,56 @@ body.sin-scroll {
   border: none;
   cursor: pointer;
 }
+
+
+/* ====== AJUSTE: PORTADA MÁS COMPACTA ====== */
+.portada {
+  padding: 52px 24px 48px;
+}
+
+.portada-petalos {
+  right: -90px;
+  bottom: -110px;
+  width: 260px;
+  height: 260px;
+}
+
+.portada-etiqueta {
+  margin-bottom: 14px;
+}
+
+.portada h1 {
+  margin-bottom: 16px;
+  font-size: clamp(2.2rem, 8vw, 3.6rem);
+  line-height: 1.08;
+}
+
+.portada-texto {
+  margin: 0 auto 24px;
+  font-size: 0.95rem;
+}
+
+/* La notita manuscrita pasa a su propia línea, debajo del botón */
+.portada-nota {
+  display: block;
+  margin-top: 20px;
+  font-size: 1.35rem;
+}
+
+/* Pantallas grandes */
+@media (min-width: 900px) {
+  .portada {
+    padding: 76px 24px 68px;
+  }
+
+  .portada-petalos {
+    right: -110px;
+    bottom: -150px;
+    width: 400px;
+    height: 400px;
+  }
+
+  .portada-nota {
+    font-size: 1.55rem;
+  }
+}
