@@ -909,7 +909,62 @@ body.sin-scroll {
   min-height: 44px;
   cursor: pointer;
 }
+/* ====== VENTANA "NOSOTRAS" ====== */
+.fondo-nosotras {
+  position: fixed;
+  inset: 0;
+  background: rgba(58, 51, 45, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+  z-index: 50;
+}
+
+.fondo-nosotras.abierto {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-nosotras {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -46%);
+  width: min(520px, 92%);
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 36px 28px 28px;
+  background: var(--crema);
+  border-radius: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s;
+  z-index: 60;
+}
+
+.modal-nosotras.abierto {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%);
+}
+
+.modal-nosotras h2 {
+  font-size: 2rem;
+  margin-bottom: 14px;
+}
+
 .modal-nosotras h2 em {
   font-style: italic;
   color: var(--terracota);
+}
+
+.modal-nosotras p {
+  color: var(--texto-suave);
+  margin-bottom: 12px;
+}
+
+.modal-nosotras .cerrar {
+  position: absolute;
+  top: 8px;
+  right: 8px;
 }
