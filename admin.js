@@ -302,9 +302,17 @@ function dibujarLista() {
 
 // ====== FORMULARIO DE PRENDA ======
 function actualizarCategorias() {
-  const categorias = [...new Set(listaPrendas.map(p => p.categoria))];
+  const categorias = [...new Set(listaPrendas.map(p => p.categoria).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b, "es"));
+
   document.getElementById("lista-categorias").innerHTML =
     categorias.map(c => `<option value="${esc(c)}"></option>`).join("");
+
+  document.getElementById("p-categorias-sugeridas").innerHTML =
+    categorias.length
+      ? `<span class="admin-sugerencias-titulo">Categorías usadas:</span>` +
+        categorias.map(c => `<button class="admin-sugerencia" type="button" data-categoria="${esc(c)}">${esc(c)}</button>`).join("")
+      : "";
 }
 
 const TEXTO_AYUDA_FOTO = "Podés elegir hasta 6 fotos. La primera es la portada. Se achican solas al subirlas.";
@@ -533,7 +541,12 @@ document.getElementById("p-archivo").addEventListener("change", async function (
     evento.target.value = ""; // permite elegir de nuevo las mismas fotos
   }
 });
-
+// Tocar una categoría sugerida la completa en el campo
+document.getElementById("p-categorias-sugeridas").addEventListener("click", function (evento) {
+  const boton = evento.target.closest("[data-categoria]");
+  if (!boton) return;
+  document.getElementById("p-categoria").value = boton.dataset.categoria;
+});
 // Quitar una foto o cambiar la portada (se aplica al guardar)
 document.getElementById("p-fotos").addEventListener("click", function (evento) {
   const boton = evento.target.closest("[data-foto-accion]");
