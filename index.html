@@ -27,7 +27,7 @@
     </a>
     <nav class="menu">
       <a href="#prendas">Prendas</a>
-      <a href="#nosotras">Nosotras</a>
+      <a href="#sobre-mi" id="abrir-sobre-mi">Sobre mí</a>
     </nav>
   </header>
 
@@ -74,20 +74,9 @@
     <div class="grilla" id="grilla"></div>
   </section>
 
-    <!-- VENTANA "NOSOTRAS" -->
-  <div class="fondo-nosotras" id="fondo-nosotras"></div>
-  <section class="modal-nosotras" id="modal-nosotras" role="dialog" aria-modal="true" aria-labelledby="titulo-nosotras">
-    <button class="cerrar" id="cerrar-nosotras" type="button" aria-label="Cerrar">✕</button>
-    <h2 id="titulo-nosotras">Moda que vuelve a <em>florecer</em></h2>
-    <p>
-      Creemos en darle una segunda vida a la ropa linda. Cada prenda es única,
-      cuidada y elegida con cariño.
-    </p>
-  </section>
-
   <!-- PIE DE PÁGINA -->
   <footer class="pie">
-    <p>© Flor de Prenda · Montevideo, Uruguay</p>
+    <p>Flor de Prenda · Montevideo, Uruguay</p>
   </footer>
 
   <!-- BOTÓN FLOTANTE DE WHATSAPP (consultas rápidas). El enlace lo completa app.js -->
@@ -112,6 +101,7 @@
     <div class="panel-lista" id="lista-carrito"></div>
     <div class="panel-pie" id="pie-carrito"></div>
   </aside>
+
   <!-- FICHA DE LA PRENDA (fotos deslizables) -->
   <div class="fondo-ficha" id="fondo-ficha"></div>
 
@@ -120,7 +110,87 @@
     <div class="ficha-galeria" id="ficha-galeria"></div>
     <div class="ficha-info" id="ficha-info"></div>
   </aside>
+
+  <!-- VENTANA "SOBRE MÍ" -->
+  <style>
+    .sobre-mi {
+      border: none;
+      padding: 0;
+      width: min(520px, 92%);
+      max-height: 85vh;
+      overflow-y: auto;
+      border-radius: 14px;
+      background: #F7F2E9;
+      color: #342A26;
+      box-shadow: 0 20px 50px rgba(52, 42, 38, 0.3);
+    }
+    .sobre-mi::backdrop {
+      background: rgba(52, 42, 38, 0.55);
+    }
+    .sobre-mi-contenido {
+      padding: 44px 30px 30px;
+    }
+    .sobre-mi h2 {
+      font-size: 2rem;
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+    .sobre-mi h2 em {
+      font-style: italic;
+      color: #A84F36;
+    }
+    .sobre-mi p {
+      margin-bottom: 12px;
+      opacity: 0.85;
+    }
+    .sobre-mi-cerrar {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 44px;
+      height: 44px;
+      font-size: 1.2rem;
+      color: #342A26;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+    body:has(dialog[open]) {
+      overflow: hidden;
+    }
+  </style>
+
+  <dialog class="sobre-mi" id="sobre-mi" aria-labelledby="titulo-sobre-mi">
+    <form method="dialog">
+      <button class="sobre-mi-cerrar" aria-label="Cerrar">✕</button>
+    </form>
+    <div class="sobre-mi-contenido">
+      <h2 id="titulo-sobre-mi">Moda que vuelve a <em>florecer</em></h2>
+      <p>
+        Creemos en darle una segunda vida a la ropa linda. Cada prenda es única,
+        cuidada y elegida con cariño.
+      </p>
+    </div>
+  </dialog>
+
   <script src="config.js"></script>
   <script src="app.js"></script>
+  <script>
+    (function () {
+      var enlace = document.getElementById("abrir-sobre-mi");
+      var dialogo = document.getElementById("sobre-mi");
+      if (!enlace || !dialogo || typeof dialogo.showModal !== "function") return;
+
+      enlace.addEventListener("click", function (evento) {
+        evento.preventDefault();
+        dialogo.showModal();
+      });
+
+      // Un clic en el fondo oscuro, fuera de la tarjeta, la cierra
+      dialogo.addEventListener("click", function (evento) {
+        if (evento.target === dialogo) dialogo.close();
+      });
+    })();
+  </script>
 </body>
 </html>
