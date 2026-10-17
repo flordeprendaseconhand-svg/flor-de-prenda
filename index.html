@@ -73,10 +73,12 @@
     <div class="filtros" id="filtros"></div>
     <div class="grilla" id="grilla"></div>
   </section>
+
   <!-- LEMA (arriba del pie de página) -->
   <section class="lema">
     <p>Moda que vuelve a <em>florecer</em></p>
   </section>
+
   <!-- PIE DE PÁGINA -->
   <footer class="pie">
     <p>Flor de Prenda · Montevideo, Uruguay</p>
@@ -114,7 +116,7 @@
     <div class="ficha-info" id="ficha-info"></div>
   </aside>
 
-  <!-- VENTANA "SOBRE MÍ" -->
+  <!-- ESTILOS DE "SOBRE MÍ" Y DEL LEMA -->
   <style>
     .sobre-mi {
       border: none;
@@ -161,7 +163,7 @@
     body:has(dialog[open]) {
       overflow: hidden;
     }
-  </style>
+
     .lema {
       text-align: center;
       padding: 56px 24px;
@@ -176,11 +178,14 @@
       font-style: italic;
       color: #A84F36;
     }
+  </style>
+
+  <!-- VENTANA "SOBRE MÍ" -->
   <dialog class="sobre-mi" id="sobre-mi" aria-labelledby="titulo-sobre-mi">
     <form method="dialog">
       <button class="sobre-mi-cerrar" aria-label="Cerrar">✕</button>
     </form>
-       <div class="sobre-mi-contenido">
+    <div class="sobre-mi-contenido">
       <h2 id="titulo-sobre-mi">Moda que vuelve a <em>florecer</em></h2>
       <p>
         Flor de Prenda nació de la resiliencia: de esos momentos en los que la vida nos lleva por caminos que nunca imaginamos y nos invita a descubrir una fuerza que no sabíamos que teníamos.
