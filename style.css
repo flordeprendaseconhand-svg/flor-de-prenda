@@ -909,3 +909,7 @@ body.sin-scroll {
   min-height: 44px;
   cursor: pointer;
 }
+.modal-nosotras h2 em {
+  font-style: italic;
+  color: var(--terracota);
+}
