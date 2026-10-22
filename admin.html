@@ -57,6 +57,15 @@
       border-radius: 8px;
       cursor: pointer;
     }
+
+    /* Botón para descargar el Excel */
+    .admin-excel {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 14px;
+      margin: 6px 0 18px;
+    }
   </style>
 </head>
 <body class="pagina-admin">
@@ -91,7 +100,12 @@
       </div>
       <p class="admin-aviso" id="aviso-panel"></p>
 
-      <button class="admin-boton-secundario" id="btn-exportar" type="button">Descargar inventario (Excel)</button>
+      <!-- DESCARGAR EXCEL CON TODAS LAS PRENDAS -->
+      <div class="admin-excel">
+        <button class="admin-boton-secundario" id="btn-excel" type="button">Descargar inventario (Excel)</button>
+        <p class="admin-ayuda" id="excel-estado"></p>
+      </div>
+
       <!-- FORMULARIO PARA CREAR / EDITAR -->
       <form id="form-prenda" class="admin-form admin-form-prenda" hidden>
         <h2 id="form-titulo">Nueva prenda</h2>
