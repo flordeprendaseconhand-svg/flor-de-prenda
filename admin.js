@@ -638,7 +638,52 @@ document.getElementById("lista-admin").addEventListener("click", async function 
     }
   }
 });
+// ====== DESCARGAR INVENTARIO (CSV para Excel) ======
+function celdaCsv(valor) {
+  let texto = String(valor ?? "").replace(/\r?\n/g, " ").trim();
+  // Evita que Excel interprete un texto como fórmula
+  if (/^[=+\-@]/.test(texto)) texto = "'" + texto;
+  return '"' + texto.replace(/"/g, '""') + '"';
+}
 
+function descargarInventario() {
+  const columnas = [
+    "ID", "Nombre", "Categoría", "Talle", "Precio (UYU)",
+    "Estado", "Visible en la tienda", "Cantidad de fotos",
+    "Descripción", "Fecha de carga"
+  ];
+
+  const filas = listaPrendas.map(p => [
+    p.id,
+    p.nombre,
+    p.categoria,
+    p.talle,
+    p.precio,
+    p.disponible ? "Disponible" : "Vendida",
+    p.visible ? "Sí" : "No",
+    Array.isArray(p.fotos) ? p.fotos.length : (p.foto_url ? 1 : 0),
+    p.descripcion || "",
+    p.creado_en ? p.creado_en.slice(0, 10) : ""
+  ]);
+
+  const contenido = [columnas, ...filas]
+    .map(fila => fila.map(celdaCsv).join(";"))
+    .join("\r\n");
+
+  // El "\uFEFF" del principio hace que Excel muestre bien las tildes
+  const archivo = new Blob(["\uFEFF" + contenido], { type: "text/csv;charset=utf-8" });
+  const hoy = new Date().toISOString().slice(0, 10);
+
+  const enlace = document.createElement("a");
+  enlace.href = URL.createObjectURL(archivo);
+  enlace.download = "inventario-flor-de-prenda-" + hoy + ".csv";
+  document.body.appendChild(enlace);
+  enlace.click();
+  enlace.remove();
+  setTimeout(function () { URL.revokeObjectURL(enlace.href); }, 1000);
+}
+
+document.getElementById("btn-exportar").addEventListener("click", descargarInventario);
 // ====== ARRANQUE ======
 cargarSesion();
 if (sesion) {
