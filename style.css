@@ -1250,3 +1250,111 @@ body.sin-scroll {
     font-size: 0.78rem;
   }
 }
+/* ====== TEMA CYBER MONDAY (se activa solo del 2 al 4 de noviembre) ====== */
+body.cyber {
+  --azul: #155A8A;
+  --azul-oscuro: #0F4468;
+  --azul-suave: #E1ECF4;
+}
+
+/* Encabezado y menú */
+body.cyber .encabezado {
+  border-bottom-color: var(--azul);
+}
+body.cyber .menu a:hover {
+  color: var(--azul);
+  border-bottom-color: var(--azul);
+}
+
+/* Portada */
+body.cyber .portada {
+  background: var(--azul-suave);
+}
+body.cyber .portada-etiqueta {
+  color: var(--azul);
+}
+body.cyber .portada h1 {
+  color: var(--azul-oscuro);
+}
+body.cyber .portada-petalos {
+  color: var(--azul);
+  opacity: 0.25;
+}
+
+/* Botones */
+body.cyber .boton {
+  background: var(--azul);
+}
+body.cyber .boton:hover {
+  background: var(--azul-oscuro);
+}
+
+/* Títulos y precios de las prendas */
+body.cyber .prendas h2,
+body.cyber .tarjeta h3 {
+  color: var(--azul-oscuro);
+}
+body.cyber .precio {
+  color: var(--azul);
+}
+
+/* Filtros */
+body.cyber .chip {
+  border-color: var(--azul);
+  color: var(--azul);
+}
+body.cyber .chip:hover {
+  background: var(--azul-suave);
+}
+body.cyber .chip.activo {
+  background: var(--azul);
+  border-color: var(--azul);
+  color: var(--crema);
+}
+
+/* Botón "Agregar" de cada tarjeta */
+body.cyber .boton-agregar {
+  border-color: var(--azul);
+  color: var(--azul);
+}
+body.cyber .boton-agregar:hover:not(:disabled) {
+  background: var(--azul);
+  color: var(--crema);
+}
+
+/* Carrito y WhatsApp flotantes */
+body.cyber .carrito-flotante {
+  background: var(--azul);
+}
+body.cyber .carrito-flotante span {
+  color: var(--azul);
+}
+body.cyber .whatsapp-flotante {
+  background: var(--azul-oscuro);
+}
+body.cyber .whatsapp-flotante:hover {
+  background: var(--azul);
+}
+
+/* Panel del carrito */
+body.cyber .panel-cabecera h2,
+body.cyber .item-nombre,
+body.cyber .fila-total-final {
+  color: var(--azul-oscuro);
+}
+body.cyber .fila-total-final {
+  border-top-color: var(--azul);
+}
+
+/* Ficha de la prenda */
+body.cyber .ficha-info h2 {
+  color: var(--azul-oscuro);
+}
+
+/* Lema y pie de página */
+body.cyber .lema em {
+  color: var(--azul);
+}
+body.cyber .pie {
+  background: var(--azul-oscuro);
+}
