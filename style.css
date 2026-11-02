@@ -1032,3 +1032,221 @@ body.sin-scroll {
     font-size: 1.55rem;
   }
 }
+/* ====== BANNER CYBER MONDAY ====== */
+.cm {
+  --azul: #155A8A;
+  position: relative;
+  overflow: hidden;
+  padding: 28px 20px 30px;
+  text-align: center;
+  background: var(--crema);
+  border-bottom: 1px solid var(--arena);
+}
+
+/* Necesario para que "hidden" funcione aunque otros estilos pongan display */
+.cm[hidden],
+.cm [hidden] {
+  display: none !important;
+}
+
+/* Detalles de fondo: manchas salvia y azul */
+.cm::before,
+.cm::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.cm::before {
+  top: -80px;
+  left: -80px;
+  width: 190px;
+  height: 190px;
+  background: var(--salvia);
+  opacity: 0.5;
+}
+.cm::after {
+  right: -90px;
+  bottom: -100px;
+  width: 200px;
+  height: 200px;
+  background: var(--azul);
+  opacity: 0.2;
+}
+
+.cm-contenido {
+  position: relative;
+  z-index: 1;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.cm-logo {
+  margin-bottom: 20px;
+}
+
+.cm-principal {
+  display: grid;
+  justify-items: center;
+  gap: 22px;
+}
+
+.cm-titulo-caja {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.cm-bolsa {
+  flex-shrink: 0;
+  width: 54px;
+  height: auto;
+  color: var(--azul);
+}
+
+.cm-titulo {
+  font-size: clamp(2.4rem, 11vw, 3.6rem);
+  line-height: 0.95;
+  text-align: left;
+  color: var(--azul);
+}
+.cm-titulo span {
+  display: block;
+  font-weight: 700;
+}
+.cm-titulo em {
+  display: block;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.cm-fechas {
+  display: inline-block;
+  padding: 8px 22px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--crema);
+  background: var(--azul);
+}
+
+/* Marco del contador con la etiqueta encima */
+.cm-cuenta {
+  position: relative;
+  max-width: 460px;
+  margin: 30px auto 0;
+  padding: 28px 12px 16px;
+  border: 1px solid var(--salvia);
+  border-radius: 22px;
+}
+
+.cm-termina {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 18px;
+  white-space: nowrap;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--verde-oscuro);
+  background: var(--salvia);
+}
+
+.cm-contador {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.cm-unidad {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  max-width: 82px;
+  padding: 8px 2px 6px;
+  border-radius: 12px;
+  color: var(--crema);
+  background: var(--azul);
+}
+
+.cm-numero {
+  font-family: var(--fuente-titulos);
+  font-size: 1.7rem;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.cm-rotulo {
+  margin-top: 4px;
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+}
+
+.cm-sep {
+  font-family: var(--fuente-titulos);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--verde-oscuro);
+}
+
+.cm-final {
+  margin-top: 20px;
+  font-family: var(--fuente-titulos);
+  font-style: italic;
+  font-size: 1.5rem;
+  color: var(--terracota);
+}
+
+.cm-boton {
+  margin-top: 24px;
+  background: var(--azul);
+}
+
+/* Pantallas grandes: título a la izquierda, contador a la derecha */
+@media (min-width: 900px) {
+  .cm {
+    padding: 40px 48px 44px;
+  }
+  .cm::before {
+    top: -120px;
+    left: -100px;
+    width: 300px;
+    height: 300px;
+  }
+  .cm::after {
+    right: -120px;
+    bottom: -150px;
+    width: 340px;
+    height: 340px;
+  }
+  .cm-principal {
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .cm-titulo-caja {
+    padding-right: 40px;
+    border-right: 1px solid var(--salvia);
+  }
+  .cm-detalle {
+    padding-left: 40px;
+  }
+  .cm-bolsa {
+    width: 84px;
+  }
+  .cm-titulo {
+    font-size: 4.2rem;
+  }
+  .cm-numero {
+    font-size: 2rem;
+  }
+  .cm-rotulo {
+    font-size: 0.78rem;
+  }
+}
