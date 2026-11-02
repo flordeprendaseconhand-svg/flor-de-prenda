@@ -296,8 +296,9 @@
         dias.textContent = horas.textContent = minutos.textContent = segundos.textContent = "00";
         mensajeFinal.hidden = false;   // "Cyber Monday finalizó"
         boton.hidden = true;           // se oculta el botón promocional
-        setTimeout(function () {       // y a los 10 segundos desaparece el banner
+                setTimeout(function () {       // a los 10 segundos desaparece el banner y vuelven los colores de siempre
           banner.hidden = true;
+          document.body.classList.remove("cyber");
         }, 10000);
       }
 
@@ -315,6 +316,7 @@
       }
 
       banner.hidden = false;
+      document.body.classList.add("cyber");   // activa los colores azules
       reloj = setInterval(actualizar, 1000);
       actualizar();
     })();
