@@ -125,6 +125,10 @@
         <label for="p-precio">Precio en pesos uruguayos</label>
         <input id="p-precio" type="number" inputmode="numeric" min="0" step="1" placeholder="Ej: 1490" required>
 
+        <label for="p-precio-oferta">Precio nuevo Cyber Lunes (opcional)</label>
+        <input id="p-precio-oferta" type="number" inputmode="numeric" min="0" step="1" placeholder="Ej: 1190">
+        <p class="admin-ayuda">Si lo completás, el precio de arriba se muestra tachado en la tienda y este queda abajo. Vuelve solo al precio normal el 4/11/2026 a las 24:00. Dejalo vacío si la prenda no tiene oferta.</p>
+
         <label for="p-descripcion">Descripción (opcional)</label>
         <textarea id="p-descripcion" rows="3" placeholder="Medidas, estado, composición..."></textarea>
 
@@ -148,6 +152,7 @@
   </main>
 
   <script src="config.js"></script>
-  <script src="admin.js"></script>
+  <script src="oferta.js?v=20"></script>
+  <script src="admin.js?v=20"></script>
 </body>
 </html>
