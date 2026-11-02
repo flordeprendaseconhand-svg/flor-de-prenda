@@ -1,5 +1,5 @@
 // ====== PANEL DE ADMINISTRACIÓN · Paso 19: descargar Excel con fotos ======
-// Versión 19.1 (si ves esto en "Ver código fuente", el archivo nuevo está publicado)
+// Versión 20 · precios tachados con oferta Cyber Lunes (necesita oferta.js cargado antes)
 
 const CLAVE_SESION = "flor-admin-sesion";
 const BUCKET_FOTOS = "prendas";
@@ -297,6 +297,10 @@ function crearFilaAdmin(prenda) {
     ? `<span class="insignia">Visible en la tienda</span>`
     : `<span class="insignia gris">Oculta</span>`;
 
+  const textoPrecio = tieneOferta(prenda)
+    ? `<s>${formatearPrecio(prenda.precio)}</s> → <strong>${formatearPrecio(prenda.precio_oferta)}</strong>`
+    : formatearPrecio(prenda.precio);
+
   const textoVenta = prenda.disponible ? "Marcar vendida" : "Marcar disponible";
   const textoVisible = prenda.visible ? "Ocultar" : "Mostrar";
 
@@ -305,7 +309,7 @@ function crearFilaAdmin(prenda) {
       ${miniatura}
       <div class="admin-datos">
         <p class="admin-nombre">${esc(prenda.nombre)}</p>
-        <p class="detalle">Talle ${esc(prenda.talle)} · ${esc(prenda.categoria)} · ${formatearPrecio(prenda.precio)}${textoFotos}</p>
+        <p class="detalle">Talle ${esc(prenda.talle)} · ${esc(prenda.categoria)} · ${textoPrecio}${textoFotos}</p>
         <div class="admin-etiquetas">${estadoVenta}${estadoVisible}</div>
       </div>
       <div class="admin-acciones">
@@ -362,6 +366,7 @@ function abrirFormulario(prenda) {
     document.getElementById("p-categoria").value = prenda.categoria;
     document.getElementById("p-talle").value = prenda.talle;
     document.getElementById("p-precio").value = prenda.precio;
+    document.getElementById("p-precio-oferta").value = prenda.precio_oferta ?? "";
     document.getElementById("p-descripcion").value = prenda.descripcion || "";
 
     if (Array.isArray(prenda.fotos) && prenda.fotos.length > 0) {
@@ -408,11 +413,29 @@ async function guardarFormulario(evento) {
     return;
   }
 
+  // Precio nuevo (opcional). Vacío = sin oferta.
+  const textoOferta = document.getElementById("p-precio-oferta").value.trim();
+  let precioOferta = null;
+  if (textoOferta !== "") {
+    precioOferta = Number(textoOferta);
+    if (!Number.isInteger(precioOferta) || precioOferta < 0) {
+      error.textContent = "El precio nuevo tiene que ser un número entero, sin puntos ni comas.";
+      error.hidden = false;
+      return;
+    }
+    if (precioOferta >= precio) {
+      error.textContent = "El precio nuevo tiene que ser menor que el precio normal.";
+      error.hidden = false;
+      return;
+    }
+  }
+
   const datos = {
     nombre: document.getElementById("p-nombre").value.trim(),
     categoria: document.getElementById("p-categoria").value.trim(),
     talle: document.getElementById("p-talle").value.trim(),
     precio: precio,
+    precio_oferta: precioOferta,
     descripcion: document.getElementById("p-descripcion").value.trim() || null,
     fotos: fotosActuales,
     foto_url: fotosActuales[0] || null // la portada sigue guardada en foto_url
@@ -528,8 +551,10 @@ document.getElementById("btn-cancelar").addEventListener("click", cerrarFormular
 document.getElementById("form-prenda").addEventListener("submit", guardarFormulario);
 
 // Evita que la rueda del mouse cambie el precio sin querer
-document.getElementById("p-precio").addEventListener("wheel", function (evento) {
-  evento.target.blur();
+["p-precio", "p-precio-oferta"].forEach(function (id) {
+  document.getElementById(id).addEventListener("wheel", function (evento) {
+    evento.target.blur();
+  });
 });
 
 // Elegir fotos: cada una se achica, se sube y se agrega a la tira de miniaturas
@@ -781,6 +806,7 @@ async function descargarExcel() {
       { header: "Categoría", key: "categoria", width: 16 },
       { header: "Talle", key: "talle", width: 9 },
       { header: "Precio", key: "precio", width: 12 },
+      { header: "Precio oferta", key: "precio_oferta", width: 14 },
       { header: "Estado", key: "estado", width: 13 },
       { header: "En la tienda", key: "visible", width: 13 },
       { header: "Cargada el", key: "creada", width: 13 },
@@ -814,6 +840,7 @@ async function descargarExcel() {
         categoria: prenda.categoria,
         talle: prenda.talle,
         precio: prenda.precio,
+        precio_oferta: prenda.precio_oferta ?? "",
         estado: prenda.disponible ? "Disponible" : "Vendida",
         visible: prenda.visible ? "Visible" : "Oculta",
         creada: fechaCorta(prenda.creado_en),
@@ -823,6 +850,7 @@ async function descargarExcel() {
 
       fila.height = 66;
       fila.getCell("precio").numFmt = '"$" #,##0';
+      fila.getCell("precio_oferta").numFmt = '"$" #,##0';
 
       // Enlaces a cada foto
       fotos.slice(0, MAXIMO_FOTOS).forEach(function (direccion, n) {
