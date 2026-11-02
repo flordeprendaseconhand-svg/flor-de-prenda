@@ -1,4 +1,5 @@
 // ====== PANEL DE ADMINISTRACIÓN · Paso 19: descargar Excel con fotos ======
+// Versión 19.1 (si ves esto en "Ver código fuente", el archivo nuevo está publicado)
 
 const CLAVE_SESION = "flor-admin-sesion";
 const BUCKET_FOTOS = "prendas";
@@ -27,6 +28,36 @@ function mostrar(idPantalla) {
     document.getElementById(id).hidden = (id !== idPantalla);
   });
   document.getElementById("salir").hidden = (idPantalla !== "pantalla-panel");
+}
+
+// ====== BOTÓN DE EXCEL (se asegura de que exista en la página) ======
+// Si el HTML publicado es una versión vieja y no trae el botón, lo crea desde acá.
+function asegurarBotonExcel() {
+  if (document.getElementById("btn-excel")) return;
+
+  const contenedor = document.createElement("div");
+  contenedor.className = "admin-excel";
+  contenedor.style.cssText = "display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:6px 0 18px;";
+
+  const boton = document.createElement("button");
+  boton.className = "admin-boton-secundario";
+  boton.id = "btn-excel";
+  boton.type = "button";
+  boton.textContent = "Descargar inventario (Excel)";
+
+  const estado = document.createElement("p");
+  estado.className = "admin-ayuda";
+  estado.id = "excel-estado";
+
+  contenedor.appendChild(boton);
+  contenedor.appendChild(estado);
+
+  const aviso = document.getElementById("aviso-panel");
+  if (aviso && aviso.parentNode) {
+    aviso.parentNode.insertBefore(contenedor, aviso.nextSibling);
+  } else {
+    document.getElementById("pantalla-panel").prepend(contenedor);
+  }
 }
 
 // ====== SESIÓN ======
@@ -443,6 +474,7 @@ async function mostrarPanel() {
 
     listaPrendas = await consultar("prendas?select=*&order=creado_en.desc");
     dibujarLista();
+    asegurarBotonExcel(); // por si el HTML no trae el botón
     mostrar("pantalla-panel");
   } catch (error) {
     if (error.message === "sin-sesion") {
@@ -850,18 +882,14 @@ async function descargarExcel() {
   }
 }
 
-// Conecta el botón (si todavía no existe en la página, no hace nada)
-const botonExcel = document.getElementById("btn-excel");
-if (botonExcel) botonExcel.addEventListener("click", descargarExcel);
-
 // ====== ARRANQUE ======
+// Primero nos aseguramos de que el botón exista, y recién después lo conectamos
+asegurarBotonExcel();
+document.getElementById("btn-excel").addEventListener("click", descargarExcel);
+
 cargarSesion();
 if (sesion) {
   mostrarPanel();
 } else {
-  mostrarPanel_o_login();
-}
-
-function mostrarPanel_o_login() {
   mostrar("pantalla-login");
 }
