@@ -30,7 +30,51 @@
       <a href="#sobre-mi" id="abrir-sobre-mi">Sobre mí</a>
     </nav>
   </header>
+  <!-- BANNER CYBER MONDAY (solo se muestra del 2 al 4 de noviembre de 2026) -->
+  <section class="cm" id="cm" aria-labelledby="cm-titulo" hidden>
+    <div class="cm-contenido">
 
+      <div class="marca cm-logo">
+        <img class="marca-flor" src="logo-flor.png" alt="" width="380" height="380">
+        <span class="marca-nombre">
+          <span>FLOR</span><span class="marca-de">de</span><span>PRENDA</span>
+        </span>
+      </div>
+
+      <div class="cm-principal">
+        <div class="cm-titulo-caja">
+          <svg class="cm-bolsa" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M20 24v-6a12 12 0 0 1 24 0v6"/>
+            <path d="M10 24h44l-3 30a4 4 0 0 1-4 4H17a4 4 0 0 1-4-4z"/>
+            <path d="M32 47c-6-4-9-7-9-10.5a4.8 4.8 0 0 1 9-2.3 4.8 4.8 0 0 1 9 2.3c0 3.5-3 6.5-9 10.5z"/>
+          </svg>
+          <h2 class="cm-titulo" id="cm-titulo"><span>Cyber</span><em>Monday</em></h2>
+        </div>
+
+        <div class="cm-detalle">
+          <p class="cm-fechas">Del 2/11/2026 al 4/11/2026</p>
+
+          <div class="cm-cuenta" id="cm-cuenta">
+            <p class="cm-termina">La oferta termina en:</p>
+            <div class="cm-contador" role="timer" aria-live="off" aria-label="Tiempo que queda de la oferta">
+              <div class="cm-unidad"><span class="cm-numero" id="cm-dias">00</span><span class="cm-rotulo">Días</span></div>
+              <span class="cm-sep" aria-hidden="true">:</span>
+              <div class="cm-unidad"><span class="cm-numero" id="cm-horas">00</span><span class="cm-rotulo">Horas</span></div>
+              <span class="cm-sep" aria-hidden="true">:</span>
+              <div class="cm-unidad"><span class="cm-numero" id="cm-minutos">00</span><span class="cm-rotulo">Minutos</span></div>
+              <span class="cm-sep" aria-hidden="true">:</span>
+              <div class="cm-unidad"><span class="cm-numero" id="cm-segundos">00</span><span class="cm-rotulo">Segundos</span></div>
+            </div>
+          </div>
+
+          <p class="cm-final" id="cm-final" role="status" hidden>Cyber Monday finalizó</p>
+
+          <a class="boton cm-boton" id="cm-boton" href="#prendas">Descubrí nuestras oportunidades</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
   <!-- PORTADA -->
   <section class="portada">
 
@@ -219,6 +263,60 @@
       dialogo.addEventListener("click", function (evento) {
         if (evento.target === dialogo) dialogo.close();
       });
+    })();
+  </script>
+    <!-- CONTADOR DE CYBER MONDAY -->
+  <script>
+    (function () {
+      // Fechas en hora de Uruguay (UTC-03:00)
+      var INICIO = new Date("2026-11-02T00:00:00-03:00").getTime();
+      var FIN = new Date("2026-11-05T00:00:00-03:00").getTime();
+
+      var banner = document.getElementById("cm");
+      if (!banner) return;
+
+      // Fuera de fecha el banner ni aparece: así se "borra solo" el 5 de noviembre
+      var ahora = Date.now();
+      if (ahora < INICIO || ahora >= FIN) return;
+
+      var dias = document.getElementById("cm-dias");
+      var horas = document.getElementById("cm-horas");
+      var minutos = document.getElementById("cm-minutos");
+      var segundos = document.getElementById("cm-segundos");
+      var mensajeFinal = document.getElementById("cm-final");
+      var boton = document.getElementById("cm-boton");
+      var reloj;
+
+      function dos(n) {
+        return n < 10 ? "0" + n : String(n);
+      }
+
+      function terminar() {
+        clearInterval(reloj);
+        dias.textContent = horas.textContent = minutos.textContent = segundos.textContent = "00";
+        mensajeFinal.hidden = false;   // "Cyber Monday finalizó"
+        boton.hidden = true;           // se oculta el botón promocional
+        setTimeout(function () {       // y a los 10 segundos desaparece el banner
+          banner.hidden = true;
+        }, 10000);
+      }
+
+      function actualizar() {
+        var resta = FIN - Date.now();
+        if (resta <= 0) {
+          terminar();
+          return;
+        }
+        var total = Math.floor(resta / 1000);
+        dias.textContent = dos(Math.floor(total / 86400));
+        horas.textContent = dos(Math.floor((total % 86400) / 3600));
+        minutos.textContent = dos(Math.floor((total % 3600) / 60));
+        segundos.textContent = dos(total % 60);
+      }
+
+      banner.hidden = false;
+      reloj = setInterval(actualizar, 1000);
+      actualizar();
     })();
   </script>
 </body>
